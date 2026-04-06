@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "AnkiCapture",
+  "version": "3.0",
+  "description": "Persistent sidebar for creating Anki flashcards from highlighted text",
+
+  "permissions": [
+    "storage"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/state.js",
+        "src/sidebar.js",
+        "src/cards.js",
+        "src/ui.js",
+        "src/export.js",
+        "src/tooltip.js",
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+
+
+  "action": {
+    "default_title": "Anki Card Creator"
+  }
+}
