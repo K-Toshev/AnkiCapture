@@ -10,10 +10,8 @@
 // LOAD ORDER: After state.js, before all other modules
 
 // ── Constants ─────────────────────────────────────────────────
-// Defined here (not state.js) because they never change —
-// they're configuration, not mutable state.
-const SIDEBAR_WIDTH = 300;        // pixels
-const SIDEBAR_ID    = "anki-host";
+const SIDEBAR_ID = "anki-host";
+// sidebarWidth lives in state.js so drag logic can update it globally
 
 // ── injectSidebar() ───────────────────────────────────────────
 // Creates the host element, attaches a Shadow DOM to it,
@@ -23,46 +21,36 @@ const SIDEBAR_ID    = "anki-host";
 function injectSidebar() {
   if (document.getElementById(SIDEBAR_ID)) return;
 
-  // Create the outer host <div> — this is what Chrome sees on the page.
-  // All our actual UI lives inside its Shadow DOM, not here directly.
   const host = document.createElement("div");
   host.id = SIDEBAR_ID;
   host.style.cssText = `
     position: fixed !important;
     top: 0 !important;
     right: 0 !important;
-    width: ${SIDEBAR_WIDTH}px !important;
+    width: ${sidebarWidth}px !important;
     height: 100vh !important;
     z-index: 2147483647 !important;
     pointer-events: auto !important;
     box-sizing: border-box !important;
   `;
 
-  // Attach to <html> not <body> — some pages replace <body> dynamically
-  // (SPAs, redirect pages) which would destroy a <body>-appended element.
   document.documentElement.appendChild(host);
-
-  // attachShadow() creates an isolated HTML/CSS environment.
-  // mode: "open" means our own scripts can access it via host.shadowRoot.
-  // The page's own CSS cannot leak into the shadow root.
   shadow = host.attachShadow({ mode: "open" });
 
-  // Inject CSS first so there's no flash of unstyled content
   const styleEl = document.createElement("style");
   styleEl.textContent = SIDEBAR_CSS;
   shadow.appendChild(styleEl);
 
-  // Inject the HTML skeleton
   const panel = document.createElement("div");
   panel.id = "panel";
   panel.innerHTML = SIDEBAR_HTML;
   shadow.appendChild(panel);
 
-  // Push the page's content left so the sidebar doesn't cover it.
-  // We set this on <html> so it affects the entire layout.
   document.documentElement.style.setProperty(
-    "margin-right", SIDEBAR_WIDTH + "px", "important"
+    "margin-right", sidebarWidth + "px", "important"
   );
+
+  initDrag(host);
 }
 
 // ── SIDEBAR_HTML ──────────────────────────────────────────────
@@ -71,8 +59,9 @@ function injectSidebar() {
 // rendered dynamically by ui.js (updateStageUI()), because they
 // change depending on the active card mode.
 const SIDEBAR_HTML = `
+  <div id="drag-handle" title="Drag to resize"></div>
   <div id="header">
-    <div id="logo">ANKICAPTURE</div>
+    <div id="logo">🃏 ANKI CREATOR</div>
     <div id="count-badge">0</div>
   </div>
 
@@ -115,6 +104,18 @@ const SIDEBAR_CSS = `
     --r:       7px;
   }
 
+  /* ── Drag handle ──────────────────────────────────── */
+  #drag-handle {
+    position: absolute;
+    left: 0; top: 0;
+    width: 5px; height: 100%;
+    cursor: ew-resize;
+    z-index: 10;
+    background: transparent;
+    transition: background 0.15s;
+  }
+  #drag-handle:hover { background: var(--accent); opacity: 0.5; }
+
   /* ── Panel shell ──────────────────────────────────── */
   #panel {
     width: 100%; height: 100vh;
@@ -128,7 +129,7 @@ const SIDEBAR_CSS = `
   /* ── Header ───────────────────────────────────────── */
   #header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 15px 30px;
+    padding: 12px 14px;
     background: var(--surface); border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
@@ -266,3 +267,38 @@ const SIDEBAR_CSS = `
   }
   #toast.show { opacity: 1; }
 `;
+
+// ── initDrag(host) ────────────────────────────────────────────
+// Attaches mousedown to the drag handle. On drag, calculates the
+// new width from the cursor's distance from the right edge of the
+// viewport, then updates the host element and page margin live.
+function initDrag(host) {
+  const handle = shadow.getElementById("drag-handle");
+  const MIN_WIDTH = 200;
+  const MAX_WIDTH = 600;
+
+  handle.addEventListener("mousedown", (e) => {
+    e.preventDefault(); // prevent text selection during drag
+
+    // Disable pointer events on the page iframe/content during drag
+    // so mousemove fires reliably even over embedded frames
+    document.body.style.userSelect = "none";
+
+    function onMove(e) {
+      // New width = right edge of viewport minus cursor x position
+      const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - e.clientX));
+      sidebarWidth = newWidth;
+      host.style.setProperty("width", newWidth + "px", "important");
+      document.documentElement.style.setProperty("margin-right", newWidth + "px", "important");
+    }
+
+    function onUp() {
+      document.body.style.userSelect = "";
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  });
+}

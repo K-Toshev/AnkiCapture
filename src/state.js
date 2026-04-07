@@ -32,3 +32,6 @@ let cardMode = "frontback";
 // with shadow.getElementById() instead of document.getElementById().
 // (Regular document.getElementById won't find elements inside a shadow root.)
 let shadow = null;
+
+// Sidebar width — mutable so the drag handle can resize it
+let sidebarWidth = 300;
