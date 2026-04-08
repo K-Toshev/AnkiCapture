@@ -23,6 +23,7 @@ function setMode(mode) {
   // Swap the "active" class between the two mode tab buttons
   shadow.getElementById("mode-frontback").classList.toggle("active", mode === "frontback");
   shadow.getElementById("mode-cloze").classList.toggle("active", mode === "cloze");
+  shadow.getElementById("mode-frontai").classList.toggle("active", mode === "frontai");
 
   // Add a mode class to #panel so CSS can change colors per mode
   // (The CSS uses "#panel.mode-frontback .stage-label" selectors)
@@ -49,17 +50,17 @@ function updateStageUI() {
     // one for the term (card front).
     stage.innerHTML = `
       <div class="stage-label">
-        SENTENCE <span class="hint">(context — goes on back)</span>
-      </div>
-      <div class="stage-box ${selectedSentence ? "has-content" : "empty"}">
-        ${selectedSentence ? escapeHtml(selectedSentence) : "Nothing selected"}
-      </div>
-
-      <div class="stage-label stage-spacer">
-        TERM <span class="hint">(what to study — goes on front)</span>
+        FRONT <span class="hint">(what to study — goes on front)</span>
       </div>
       <div class="stage-box ${selectedTerm ? "has-content" : "empty"}">
         ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
+      </div>
+
+      <div class="stage-label  stage-spacer">
+        BACK <span class="hint">(context — goes on back)</span>
+      </div>
+      <div class="stage-box ${selectedSentence ? "has-content" : "empty"}">
+        ${selectedSentence ? escapeHtml(selectedSentence) : "Nothing selected"}
       </div>
 
       <div id="stage-actions">
@@ -70,7 +71,7 @@ function updateStageUI() {
         </button>
       </div>
     `;
-  } else {
+  } else if (cardMode === "cloze"){
     // ── Cloze stage ───────────────────────────────────────────
     // Two boxes plus a live preview showing the final cloze string
     // with the gap word visually highlighted.
@@ -84,7 +85,7 @@ function updateStageUI() {
       </div>
 
       <div class="stage-label stage-spacer">
-        GAP WORD <span class="hint">(the word to hide)</span>
+        GAP TERM <span class="hint">(the term to hide)</span>
       </div>
       <div class="stage-box ${selectedTerm ? "has-content" : "empty"}">
         ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
@@ -100,6 +101,33 @@ function updateStageUI() {
         <button id="btn-add" class="btn purple"
           ${!selectedSentence || !selectedTerm ? "disabled" : ""}>
           Add Cloze ✚
+        </button>
+      </div>
+    `;
+  } else if (cardMode === "frontai") {
+    // ── Front/Back stage ──────────────────────────────────────
+    // Two preview boxes: one for the sentence (card back),
+    // one for the term (card front).
+    stage.innerHTML = `
+      <div class="stage-label">
+        FRONT <span class="hint">(what to study — goes on front)</span>
+      </div>
+      <div class="stage-box ${selectedTerm ? "has-content" : "empty"}">
+        ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
+      </div>
+
+      <div class="stage-label  stage-spacer">
+        BACK <span class="hint">(context — goes on back)</span>
+      </div>
+      <div class="stage-box ${selectedSentence ? "has-content" : "empty"}">
+        ${selectedSentence ? escapeHtml(selectedSentence) : "Nothing selected"}
+      </div>
+
+      <div id="stage-actions">
+        <button id="btn-reset" class="btn ghost">↺ Reset</button>
+        <button id="btn-add" class="btn primary"
+          ${!selectedSentence && !selectedTerm ? "disabled" : ""}>
+          Add Card ✚
         </button>
       </div>
     `;
@@ -229,6 +257,7 @@ function refreshCardList() {
 function attachListeners() {
   shadow.getElementById("mode-frontback").addEventListener("click", () => setMode("frontback"));
   shadow.getElementById("mode-cloze").addEventListener("click",     () => setMode("cloze"));
+  shadow.getElementById("mode-frontai").addEventListener("click",     () => setMode("frontai"));
 
   shadow.getElementById("btn-export").addEventListener("click", exportDeck);
 
@@ -241,7 +270,7 @@ function attachListeners() {
   });
 
   // Render the initial stage UI (empty, default frontback mode)
-  updateStageUI();
+  setMode("frontback");
 }
 
 // ── showToast(msg) ────────────────────────────────────────────

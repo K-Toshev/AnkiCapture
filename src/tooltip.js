@@ -86,28 +86,34 @@ function showTooltip(x, y, text) {
 
   if (cardMode === "frontback") {
     // Front/Back: set the sentence (card back) or the term (card front)
-    tooltip.appendChild(makeBtn("Set Sentence", "#5c5cff", () => {
-      selectedSentence = text;
-      updateStageUI();
-      showToast("Sentence set ✓");
-    }));
-    tooltip.appendChild(makeBtn("Set Term", "#5c5cff", () => {
+    tooltip.appendChild(makeBtn("Set Front", "#5c5cff", () => {
       selectedTerm = text;
       updateStageUI();
-      showToast("Term set ✓");
+      showToast("Front set ✓");
     }));
-  } else {
+    tooltip.appendChild(makeBtn("Set Back", "#5c5cff", () => {
+      selectedSentence = text;
+      updateStageUI();
+      showToast("Back set ✓");
+    }));
+  } else if (cardMode === "cloze") {
     // Cloze: set the sentence (full text) or the gap word (hidden word)
     tooltip.appendChild(makeBtn("Set Sentence", "#8b5cf6", () => {
       selectedSentence = text;
       updateStageUI();
       showToast("Sentence set ✓");
     }));
-    tooltip.appendChild(makeBtn("Set Gap Word", "#8b5cf6", () => {
+    tooltip.appendChild(makeBtn("Set Gap Term", "#8b5cf6", () => {
       selectedTerm = text;
       updateStageUI();
-      showToast("Gap word set ✓");
+      showToast("Gap term set ✓");
     }));
+  } else if (cardMode === "frontai") {
+      tooltip.appendChild(makeBtn("Set Front", "#ff8800", () => {
+        selectedTerm = text;
+        updateStageUI();
+        showToast("Front set ✓");
+      }))
   }
 
   document.body.appendChild(tooltip);

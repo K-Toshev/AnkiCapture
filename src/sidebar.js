@@ -61,13 +61,14 @@ function injectSidebar() {
 const SIDEBAR_HTML = `
   <div id="drag-handle" title="Drag to resize"></div>
   <div id="header">
-    <div id="logo">🃏 ANKI CREATOR</div>
+    <div id="logo">🃏 ANKICAPTURE 0.0.1 </div>
     <div id="count-badge">0</div>
   </div>
 
   <div id="mode-bar">
     <button id="mode-frontback" class="mode-btn active">Front / Back</button>
     <button id="mode-cloze"     class="mode-btn">Cloze</button>
+    <button id="mode-frontai"     class="mode-btn">Front / AI</button>
   </div>
 
   <div id="stage"></div>
@@ -98,7 +99,8 @@ const SIDEBAR_CSS = `
     --green:   #00e89a;
     --red:     #ff4a6e;
     --purple:  #8b5cf6;
-    --text:    #ddddf5;
+    --orange:  #ff8800;
+    --text:    #ffffff;
     --muted:   #7777aa;
     --font:    'Courier New', 'Consolas', monospace;
     --r:       7px;
@@ -162,6 +164,7 @@ const SIDEBAR_CSS = `
      ui.js sets a class ("mode-frontback" or "mode-cloze") on #panel. */
   #panel.mode-frontback #mode-frontback.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
   #panel.mode-cloze     #mode-cloze.active     { color: var(--purple); border-bottom: 2px solid var(--purple); }
+  #panel.mode-frontai   #mode-frontai.active   { color: var(--orange); border-bottom: 2px solid var(--orange); }
 
   /* ── Stage area (selection previews) ─────────────── */
   #stage {
@@ -172,6 +175,7 @@ const SIDEBAR_CSS = `
   .stage-label { font-size: 10px; letter-spacing: 0.12em; margin-bottom: 5px; }
   #panel.mode-frontback .stage-label { color: var(--accent); }
   #panel.mode-cloze     .stage-label { color: var(--purple); }
+  #panel.mode-frontai   .stage-label { color: var(--orange); }
 
   .hint { color: var(--muted); font-size: 9px; letter-spacing: 0; }
   .stage-box {
@@ -183,6 +187,7 @@ const SIDEBAR_CSS = `
   .stage-box.has-content { color: var(--text); }
   #panel.mode-frontback .stage-box.has-content { border-color: var(--accent); }
   #panel.mode-cloze     .stage-box.has-content { border-color: var(--purple); }
+  #panel.mode-frontai   .stage-box.has-content { border-color: var(--orange); }
   .stage-box.empty { color: var(--muted); font-style: italic; }
   .cloze-highlight { background: var(--purple); color: #fff; border-radius: 3px; padding: 0 3px; }
   .stage-spacer { margin-top: 10px; }

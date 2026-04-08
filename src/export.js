@@ -25,6 +25,7 @@ function exportDeck() {
 
     // Split cards into their two groups
     const frontBackCards = cards.filter(c => c.type === "frontback" || !c.type);
+    const frontAICards = cards.filter(c => c.type === "frontai" || !c.type);
     const clozeCards     = cards.filter(c => c.type === "cloze");
 
     let exported = 0;
@@ -50,6 +51,18 @@ function exportDeck() {
         `${csvCell(c.cloze)},`
       );
       downloadCSV(rows.join("\n"), `anki_cloze_${Date.now()}.csv`);
+      exported++;
+    }
+
+    if (frontAICards.length > 0) {
+      // ── Basic (Front/Back) CSV format ────────────────────────
+      // Anki's Basic note type expects two columns: Front, Back.
+      // csvCell() wraps each value in quotes so internal commas
+      // don't break the CSV structure.
+      const rows = frontBackCards.map(c =>
+        `${csvCell(c.front)},${csvCell(c.back)}`
+      );
+      downloadCSV(rows.join("\n"), `anki_frontai_${Date.now()}.csv`);
       exported++;
     }
 
