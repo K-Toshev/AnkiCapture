@@ -105,32 +105,39 @@ function updateStageUI() {
       </div>
     `;
   } else if (cardMode === "frontai") {
-    // ── Front/Back stage ──────────────────────────────────────
-    // Two preview boxes: one for the sentence (card back),
-    // one for the term (card front).
     stage.innerHTML = `
-      <div class="stage-label">
-        FRONT <span class="hint">(what to study — goes on front)</span>
-      </div>
-      <div class="stage-box ${selectedTerm ? "has-content" : "empty"}">
-        ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
-      </div>
+    <div class="stage-label">FRONT <span class="hint">(select from page)</span></div>
+    <div id="sentence-box" class="stage-box ${selectedTerm ? "has-content" : "empty"}">
+      ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
+    </div>
+    <div class="stage-label stage-spacer">PROMPT <span class="hint">(optional)</span></div>
+    <textarea id="ai-prompt" class="stage-box" placeholder="e.g. explain in simple terms, give an example sentence..."></textarea>
+    <div class="stage-label stage-spacer">GENERATED BACK</div>
+    <div id="ai-preview" class="stage-box empty" style="min-height:60px">
+      Press Generate to create back
+    </div>
+    <div id="stage-actions">
+      <button id="btn-reset"    class="btn ghost">↺ Reset</button>
+      <button id="btn-generate" class="btn primary" ${!selectedTerm ? "disabled" : ""}>✦ Generate</button>
+      <button id="btn-add"      class="btn mode-primary" disabled>Add Card ✚</button>
+    </div>
+  `;
 
-      <div class="stage-label  stage-spacer">
-        BACK <span class="hint">(context — goes on back)</span>
-      </div>
-      <div class="stage-box ${selectedSentence ? "has-content" : "empty"}">
-        ${selectedSentence ? escapeHtml(selectedSentence) : "Nothing selected"}
-      </div>
+  shadow.getElementById("btn-reset").addEventListener("click", () => {
+    selectedTerm = ""; updateStageUI();
+  });
 
-      <div id="stage-actions">
-        <button id="btn-reset" class="btn ghost">↺ Reset</button>
-        <button id="btn-add" class="btn primary"
-          ${!selectedSentence && !selectedTerm ? "disabled" : ""}>
-          Add Card ✚
-        </button>
-      </div>
-    `;
+  shadow.getElementById("btn-generate").addEventListener("click", () => generateBack());
+
+  shadow.getElementById("btn-add").addEventListener("click", () => {
+    const back = shadow.getElementById("ai-preview").textContent;
+    if (!selectedTerm || !back) return;
+    saveCard({
+      id: Date.now(), type: "frontback",  // same storage shape as frontback
+      front: selectedTerm, back,
+      source: window.location.href, createdAt: new Date().toISOString()
+    });
+  });
   }
 
   // Re-attach listeners on the newly rendered buttons.
