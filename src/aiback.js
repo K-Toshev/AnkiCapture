@@ -1,5 +1,5 @@
-// Gemini API key — set by user via sidebar input
-let geminiKey = "";
+// Gemini API key — hardcoded for now
+let geminiKey = "AIzaSyCbH8PXY1Qr0oZRRgbFSRuyNGyPcWVxe-Q";
 
 function generateBack() {
   const front   = selectedTerm;
@@ -17,7 +17,7 @@ function generateBack() {
     ? `Front of flashcard: "${front}"\n\nInstructions: ${prompt}`
     : `Create a clear, concise flashcard back for the front: "${front}"`;
 
-  fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+  fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -26,7 +26,7 @@ function generateBack() {
   })
   .then(r => r.json())
   .then(data => {
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No LLM response";
     preview.textContent = text;
     preview.className   = "stage-box has-content";
     shadow.getElementById("btn-add").disabled = false;

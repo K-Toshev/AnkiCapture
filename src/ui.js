@@ -111,7 +111,7 @@ function updateStageUI() {
       ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
     </div>
     <div class="stage-label stage-spacer">PROMPT <span class="hint">(optional)</span></div>
-    <textarea id="ai-prompt" class="stage-box" placeholder="e.g. explain in simple terms, give an example sentence..."></textarea>
+    <textarea id="ai-prompt" style="color: white" class="stage-box" placeholder="e.g. explain in simple terms, give an example sentence..."></textarea>
     <div class="stage-label stage-spacer">GENERATED BACK</div>
     <div id="ai-preview" class="stage-box empty" style="min-height:60px">
       Press Generate to create back

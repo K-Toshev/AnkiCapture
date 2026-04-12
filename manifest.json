@@ -22,6 +22,7 @@
         "src/ui.js",
         "src/export.js",
         "src/tooltip.js",
+        "src/aiback.js",
         "content.js"
       ],
       "run_at": "document_end"
