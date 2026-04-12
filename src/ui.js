@@ -110,6 +110,9 @@ function updateStageUI() {
     <div id="sentence-box" class="stage-box ${selectedTerm ? "has-content" : "empty"}">
       ${selectedTerm ? escapeHtml(selectedTerm) : "Nothing selected"}
     </div>
+    <div class="stage-label">GEMINI API KEY</div>
+    <input id="gemini-key-input" class="stage-box" type="password"
+    placeholder="AIza..." style="min-height:unset; padding:5px 8px"/>
     <div class="stage-label stage-spacer">PROMPT <span class="hint">(optional)</span></div>
     <textarea id="ai-prompt" style="color: white" class="stage-box" placeholder="e.g. explain in simple terms, give an example sentence..."></textarea>
     <div class="stage-label stage-spacer">GENERATED BACK</div>
@@ -122,6 +125,14 @@ function updateStageUI() {
       <button id="btn-add"      class="btn mode-primary" disabled>Add Card ✚</button>
     </div>
   `;
+
+  shadow.getElementById("gemini-key-input").value = geminiKey;
+  
+  shadow.getElementById("gemini-key-input").addEventListener("input", (e) => {
+    geminiKey = e.target.value.trim();
+  });
+
+  shadow.getElementById("ai-prompt").textContent = cachedPrompt;
 
   shadow.getElementById("btn-reset").addEventListener("click", () => {
     selectedTerm = ""; updateStageUI();

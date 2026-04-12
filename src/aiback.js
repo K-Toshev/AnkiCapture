@@ -1,9 +1,7 @@
-// Gemini API key — hardcoded for now
-let geminiKey = "AIzaSyCbH8PXY1Qr0oZRRgbFSRuyNGyPcWVxe-Q";
-
 function generateBack() {
   const front   = selectedTerm;
   const prompt  = shadow.getElementById("ai-prompt").value.trim();
+  cachedPrompt = prompt;
   const preview = shadow.getElementById("ai-preview");
   const btn     = shadow.getElementById("btn-generate");
 

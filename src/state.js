@@ -35,3 +35,8 @@ let shadow = null;
 
 // Sidebar width — mutable so the drag handle can resize it
 let sidebarWidth = 300;
+
+// ── AI tools reference ────────────────────────────────────────
+// Contains all useful info for frontai functionality
+let cachedPrompt = "";
+let geminiKey = "";
